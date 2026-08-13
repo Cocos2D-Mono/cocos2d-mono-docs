@@ -90,13 +90,9 @@ Comments must provide added value or explanation to the code. Simply describing 
 
 ### Copyright/License notice
 
-Each file should start with a copyright notice. This is a short statement declaring the project name and copyright notice, and directing the reader to the license document elsewhere in the project. To avoid errors in doc comment builds, avoid using triple-slash doc comments.
-
-```
-// Cocos2D-Mono - Copyright (C) The Cocos2D-Mono Team
-// This file is subject to the terms and conditions defined in
-// file 'LICENSE.txt', which is part of this source code package.
-```
+Source files do not carry per-file copyright headers. The project's license lives in
+`LICENSE.txt` at the root of the repository, and applies to the whole source tree — don't
+add a header to new files.
 
 ### Documentation Comments
 
@@ -202,67 +198,82 @@ Follow all .NET Framework Design Guidelines for both internal and external membe
 
 The reasons to extend the public rules (no Hungarian, underscore prefix for member variables, etc.) is to produce a consistent source code appearance. In addition, the goal is to have clean, readable source. Code legibility should be a primary goal.
 
+:::caution Legacy `m_` fields are not free to rename
+
+Older code used an `m_` prefix for fields. Private fields have been converted to
+`_camelCase`, but several hundred **`protected`** fields (plus a handful of `public` and
+`internal` ones) still carry `m_` — and those are part of the public API surface that
+derived types compile against.
+
+Renaming them is a **breaking change**, tracked as deliberate future work with
+`[Obsolete]` shims. Leave them alone in unrelated PRs: rename private fields freely, but
+don't opportunistically "clean up" a `protected m_` field while you're passing through.
+
+:::
+
 ## File Organization
 
 - Source files should contain only one public type, although multiple internal types are permitted if required
 - Source files should be given the name of the public type in the file
-- Class members should be grouped logically, and encapsulated into regions (Fields, Constructors, Properties, Events, Methods, Private interface implementations, Nested types)
-- Using statements should be before the namespace declaration.
+- Class members should be grouped logically: fields, properties, constructors, events, methods, explicit interface implementations, then nested types
+- Using statements go before the namespace declaration
+- New files use a file-scoped namespace declaration; most of the source tree has been converted
 
-```
+```csharp
 using System;
 
-namespace MyNamespace
+namespace MyNamespace;
+
+public class MyClass : IFoo
 {
-    public class MyClass : IFoo
+    int _foo;
+
+    public int Foo { get { ... } set { ... } }
+
+    public MyClass()
     {
-        #region Fields
-        int foo;
-        #endregion
+        ...
+    }
 
-        #region Properties
-        public int Foo { get { ... } set { ... } }
-        #endregion
+    public event EventHandler FooChanged { add { ... } remove { ... } }
 
-        #region Constructors
-        public MyClass()
-        {
-            ...
-        }
-        #endregion
+    void DoSomething()
+    {
+        ...
+    }
 
-        #region Events
-        public event EventHandler FooChanged { add { ... } remove { ... } }
-        #endregion
+    void IFoo.DoSomething()
+    {
+        DoSomething();
+    }
 
-        #region Methods
-        void DoSomething()
-        {
-            ...
-        }
-
-        void FindSomething()
-        {
-            ...
-        }
-        #endregion
-
-        #region Private interface implementations
-        void IFoo.DoSomething()
-        {
-            DoSomething();
-        }
-        #endregion
-
-        #region Nested types
-        class NestedType
-        {
-            ...
-        }
-        #endregion
+    class NestedType
+    {
+        ...
     }
 }
 ```
+
+`#region` blocks appear in some older files. They're not required for new code — prefer
+logical ordering and small types — but when editing a file that already uses them, keep
+its existing structure rather than reorganizing it in an unrelated PR.
+
+## Public API stability
+
+Games ship against this library, so public API is changed deliberately rather than
+opportunistically:
+
+- Avoid breaking public or protected API. This includes renaming fields and methods,
+  changing parameter types, and removing members — anything a consumer or a derived type
+  compiles against.
+- When a change is genuinely warranted, ship an `[Obsolete]` shim that keeps the old
+  member working and points at the replacement. The old member is removed in a later
+  major version, not the same one.
+- Breaking changes require a major version bump and migration notes.
+
+This is why cleanup that looks trivial — renaming a legacy `m_` field, fixing a casing
+typo in a public member — is handled as its own tracked, deprecation-cycled change
+instead of being folded into a passing PR.
 
 # Useful Links
 
