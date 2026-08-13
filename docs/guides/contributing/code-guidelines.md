@@ -91,8 +91,8 @@ Comments must provide added value or explanation to the code. Simply describing 
 ### Copyright/License notice
 
 Source files do not carry per-file copyright headers. The project's license lives in
-`LICENSE.txt` at the root of the repository, and applies to the whole source tree — don't
-add a header to new files.
+`LICENSE` at the root of the engine repository and applies to the whole source tree —
+don't add a header to new files.
 
 ### Documentation Comments
 
