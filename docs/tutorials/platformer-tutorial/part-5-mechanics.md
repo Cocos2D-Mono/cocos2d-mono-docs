@@ -183,19 +183,6 @@ You've successfully created a complete 2D platformer game using cocos2d-mono! Yo
 - **Complete game states** from menu to gameplay
 - **Audio integration** for immersive experience
 
-## Next Steps for Enhancement
+## What's Next
 
-Consider adding these features to further improve your game:
-- Multiple levels with different layouts
-- Enemy characters with AI
-- Power-ups and special abilities
-- Better sprite artwork and animations
-- Level editor functionality
-- Achievements and high scores
-- Mobile touch controls
-
-## Final Complete Code Reference
-
-The complete, final project with all assets can be found in the [tutorial samples repository](https://github.com/Cocos2D-Mono/cocos2d-mono-samples/tree/main/Tutorial%20Samples/Platformer/Final).
-
-Thank you for following this tutorial series! You now have the foundation to create more complex 2D games with cocos2d-mono.
+Your game is complete — but it doesn't fight back yet. The series continues in **[Part 6: Enemies and Simple AI](./part-6-enemies)**, where patrolling enemies, stomp mechanics, and side-hit consequences get built from the exact sensor and filtering patterns you've already learned.

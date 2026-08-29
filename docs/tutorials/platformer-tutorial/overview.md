@@ -40,6 +40,12 @@ This tutorial is divided into several parts, each building upon the previous one
 - Creating UI elements
 - **Checkpoint**: A playable game with collectibles and score
 
+### [Part 6: Enemies and Simple AI](./part-6-enemies)
+- Patrolling enemies built on the physics patterns from earlier parts
+- Stomp-to-defeat with a head sensor (the foot sensor's mirror image)
+- Side-hit consequences and player respawn
+- **Checkpoint**: A game that fights back
+
 ## What You'll Learn
 
 Throughout this tutorial series, you'll master:
