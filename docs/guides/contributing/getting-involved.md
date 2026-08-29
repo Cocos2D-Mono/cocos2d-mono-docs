@@ -12,7 +12,7 @@ Cocos2D-Mono uses the following branches:
 
 - `master` (or `main` in the other repositories) — **release-only.** Stable releases live here; it is never a target for feature work.
 - `dev` — continued development, and the **base for everything you write**
-- `release/**` — prepares and stabilizes a release before it merges to the default branch
+- `release/**` — prepares and stabilizes a release before it merges to the default branch. That merge is then brought **back into `dev`**, so the two never drift apart
 - `feature/**`, `fix/**`, `update/**`, `docs/**`, `chore/**` — the work itself
 
 The rule that matters: **branch from `dev`, and target your pull request at `dev`.**
@@ -21,6 +21,16 @@ The rule that matters: **branch from `dev`, and target your pull request at `dev
 git checkout dev
 git pull --ff-only
 git checkout -b feature/my-change
+```
+
+Working from a fork? GitHub copies only the default branch unless you tell it otherwise,
+so your fork may not have a `dev` branch at all. Point a remote at this repository and
+branch from its `dev` instead:
+
+```bash
+git remote add upstream https://github.com/Cocos2D-Mono/<repository>.git
+git fetch upstream dev
+git checkout -b feature/my-change upstream/dev
 ```
 
 This applies across every Cocos2D-Mono repository — the engine, docs, samples, project
