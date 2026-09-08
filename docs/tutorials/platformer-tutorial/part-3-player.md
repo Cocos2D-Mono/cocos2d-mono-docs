@@ -78,11 +78,17 @@ namespace Platformer
             _body = world.CreateBody(bodyDef);
 
             // Create fixture
+            // Size the box to the VISIBLE art, not the texture. player_idle's
+            // 64x64 canvas holds a ~26x31 character sitting bottom-centre, so a
+            // centred box built from ContentSize leaves ~30px of empty collision
+            // above the head (an invisible ceiling) and overhangs ~13px per side.
+            // Bottom-align it instead.
             b2PolygonShape shape = new b2PolygonShape();
-            // Make the collision box slightly smaller than the sprite
             shape.SetAsBox(
-                ContentSize.Width * 0.4f / PhysicsHelper.PTM_RATIO,
-                ContentSize.Height * 0.45f / PhysicsHelper.PTM_RATIO);
+                ContentSize.Width * 0.2f / PhysicsHelper.PTM_RATIO,
+                ContentSize.Height * 0.25f / PhysicsHelper.PTM_RATIO,
+                new b2Vec2(0, -ContentSize.Height * 0.25f / PhysicsHelper.PTM_RATIO),
+                0);
 
             b2FixtureDef fixtureDef = new b2FixtureDef();
             fixtureDef.shape = shape;
@@ -101,7 +107,7 @@ namespace Platformer
             footShape.SetAsBox(
                 ContentSize.Width * 0.3f / PhysicsHelper.PTM_RATIO,
                 0.1f / PhysicsHelper.PTM_RATIO,
-                new b2Vec2(0, -ContentSize.Height * 0.45f / PhysicsHelper.PTM_RATIO),
+                new b2Vec2(0, -ContentSize.Height * 0.5f / PhysicsHelper.PTM_RATIO),
                 0);
 
             b2FixtureDef footFixtureDef = new b2FixtureDef();
@@ -263,6 +269,24 @@ namespace Platformer
     }
 }
 ```
+
+:::tip Match the collision box to the art, not the canvas
+
+`ContentSize` is the size of the *texture*, and sprite sheets usually pad the art
+with transparency. `player_idle` is a 64×64 canvas holding a ~26×31 character
+sitting bottom-centre, so a box built from `ContentSize` and left centred would
+extend about 30px above the character's head — an invisible ceiling that stops
+you early when jumping under a platform — while overhanging ~13px on each side.
+
+The fix is the fourth `SetAsBox` argument: an offset that bottom-aligns the box
+over the art. Measure your sprite's visible bounds and size to those.
+
+Note the foot sensor stays *wider* than the body box. That is deliberate: a
+slightly generous ground probe means you can still jump when a sliver of the
+character hangs over a ledge, which reads as forgiving. Generosity belongs in
+the sensor, not in the body box, where it just produces phantom collisions.
+
+:::
 
 ## Step 3: Integrating Player into Game
 
